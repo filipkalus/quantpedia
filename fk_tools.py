@@ -5,7 +5,7 @@ sp100_stocks = ['AAPL','MSFT','AMZN','FB','BRKB','GOOGL','GOOG','JPM','JNJ','V',
 
 def MonthDiff(d1, d2):
     return (d1.year - d2.year) * 12 + d1.month - d2.month
-	
+
 def Return(values):
     return (values[-1] - values[0]) / values[0]
     
@@ -48,7 +48,7 @@ class QuantpediaFutures(PythonData):
         data.Value = float(split[1])
 
         return data
-		
+        
 # NOTE: Manager for new trades. It's represented by certain count of equally weighted brackets for long and short positions.
 # If there's a place for new trade, it will be managed for time of holding period.
 class TradeManager():
@@ -96,19 +96,34 @@ class TradeManager():
             if managed_symbol.days_to_liquidate == 0:
                 symbols_to_delete.append(managed_symbol)
                 self.algorithm.Liquidate(managed_symbol.symbol)
+                
                 if managed_symbol.long_flag: self.long_len -= 1
                 else: self.short_len -= 1
 
         # Remove symbols from management.
         for managed_symbol in symbols_to_delete:
             self.symbols.remove(managed_symbol)
-
+    
+    def LiquidateTicker(self, ticker):
+        symbol_to_delete = None
+        for managed_symbol in self.symbols:
+            if managed_symbol.Value == ticker:
+                self.algorithm.Liquidate(managed_symbol.symbol)
+                
+                if managed_symbol.long_flag: self.long_len -= 1
+                else: self.short_len -= 1
+                
+                break
+        
+        if symbol_to_delete: self.symbols.remove(symbol_to_delete)
+        else: self.algorithm.Debug("Ticker is not held in portfolio!")
+    
 class ManagedSymbol():
     def __init__(self, symbol, days_to_liquidate, long_flag):
         self.symbol = symbol
         self.days_to_liquidate = days_to_liquidate
         self.long_flag = long_flag
-		
+        
 class PortfolioOptimization(object):
     def __init__(self, df_return, risk_free_rate, num_assets):
         self.daily_return = df_return

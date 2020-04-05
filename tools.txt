@@ -1,0 +1,823 @@
+	def OnData(self, data):
+		for symbol in self.symbols:
+			if self.Securities.ContainsKey(symbol):
+				price = self.Securities[symbol].Price
+				if price != 0:
+					self.data[symbol].append(price)
+				else:
+					# Append latest price as a next one in case there's 0 as price.
+					if len(self.data[symbol]) > 0:
+						last_price = self.data[symbol][-1]
+						self.data[symbol].append(last_price)
+
+# fast way
+		
+		if self.IsWarmingUp: return
+    
+		# Return sorting
+		returns = {}
+		volatility = {}
+		for symbol in self.symbols:
+			if len(self.data[symbol]) == self.data[symbol].maxlen:
+				prices = [x for x in self.data[symbol]]
+				returns[symbol] = self.Return(prices)
+
+				prices = prices[-60:]
+				volatility[symbol] = self.Volatility(prices)
+			#else: return
+
+		if len(returns) == 0: return
+
+		sorted_by_return = sorted(returns.items(), key = lambda x: x[1], reverse = True)
+		quintile = int(len(sorted_by_return)/5)
+		long = [x[0] for x in sorted_by_return[:quintile]]
+		short = [x[0] for x in sorted_by_return[-quintile:]]
+
+		# Volatility weighting
+		total_vol = sum([1/volatility[x] for x in long + short])
+		if total_vol == 0: 
+		
+
+
+		weight = {}
+		for symbol in long + short:
+			vol = volatility[symbol]
+			if vol != 0:
+				weight[symbol] = (1.0 / vol) / total_vol
+			else: 
+				weight[symbol] = 0
+		
+		# Trade execution
+		count = len(long + short)
+
+		self.Liquidate()
+		for symbol in long:
+			self.SetHoldings(symbol, 1/count)
+		for symbol in short:
+			self.SetHoldings(symbol, -1/count)
+
+	def Return(self, history):
+		return (history[-1] - history[0]) / history[0]
+		
+	def Volatility(self, history):
+		values = np.array(history)
+		returns = (values[1:]-values[:-1])/values[:-1]
+		return np.std(returns)  
+
+
+
+# Return sorting
+# selfHistory is slow as fuck :) => use rolling window/deque instead.
+
+returns = {}
+for symbol in self.symbols:
+	hist = self.History([symbol], 2*self.lookup_period, Resolution.Daily)
+	if 'settle' in hist:
+		hist = hist['settle'][-self.lookup_period:]
+		if len(hist) == self.lookup_period:
+			returns[symbol] = self.Return(hist)
+
+sorted_by_return = sorted(returns.items(), key = lambda x: x[1], reverse = True)
+quintile = int(len(sorted_by_return)/5)
+long = [x[0] for x in sorted_by_return[:quintile]]
+short = [x[0] for x in sorted_by_return[-quintile:]]
+
+
+# Trade execution
+self.Liquidate()
+
+count = len(long + short)
+for symbol in long:
+	self.SetHoldings(symbol, 1/count)
+for symbol in losers:
+	self.SetHoldings(symbol, -1/count)
+
+
+------------ Data import ------------
+
+
+
+# Futures - commodities
+self.symbols = ["CME_S1",   # Soybean Futures, Continuous Contract
+				"CME_W1",   # Wheat Futures, Continuous Contract
+				"CME_SM1",  # Soybean Meal Futures, Continuous Contract
+				"CME_BO1",  # Soybean Oil Futures, Continuous Contract
+				"CME_C1",   # Corn Futures, Continuous Contract
+				"CME_O1",   # Oats Futures, Continuous Contract
+				"CME_LC1",  # Live Cattle Futures, Continuous Contract
+				"CME_FC1",  # Feeder Cattle Futures, Continuous Contract
+				"CME_LN1",  # Lean Hog Futures, Continuous Contract
+				"CME_GC1",  # Gold Futures, Continuous Contract
+				"CME_SI1",  # Silver Futures, Continuous Contract
+				"CME_PL1",  # Platinum Futures, Continuous Contract
+				"CME_CL1",  # Crude Oil Futures, Continuous Contract
+				"CME_HG1",  # Copper Futures, Continuous Contract
+				"CME_LB1",  # Random Length Lumber Futures, Continuous Contract
+				"CME_NG1",  # Natural Gas (Henry Hub) Physical Futures, Continuous Contract
+				"CME_PA1",  # Palladium Futures, Continuous Contract 
+				"CME_RR1",  # Rough Rice Futures, Continuous Contract
+				
+				"ICE_CC1",  # Cocoa Futures, Continuous Contract 
+				"ICE_CT1",  # Cotton No. 2 Futures, Continuous Contract
+				"ICE_KC1",  # Coffee C Futures, Continuous Contract
+				"ICE_O1",   # Heating Oil Futures, Continuous Contract
+				"ICE_OJ1",  # Orange Juice Futures, Continuous Contract
+				"ICE_SB1"   # Sugar No. 11 Futures, Continuous Contract
+				]
+
+# Futures - complete
+        self.symbols = ["CME_S1",   # Soybean Futures, Continuous Contract
+                        "CME_W1",   # Wheat Futures, Continuous Contract
+                        "CME_SM1",  # Soybean Meal Futures, Continuous Contract
+                        "CME_BO1",  # Soybean Oil Futures, Continuous Contract
+                        "CME_C1",   # Corn Futures, Continuous Contract
+                        "CME_O1",   # Oats Futures, Continuous Contract
+                        "CME_LC1",  # Live Cattle Futures, Continuous Contract
+                        "CME_FC1",  # Feeder Cattle Futures, Continuous Contract
+                        "CME_LN1",  # Lean Hog Futures, Continuous Contract
+                        "CME_GC1",  # Gold Futures, Continuous Contract
+                        "CME_SI1",  # Silver Futures, Continuous Contract
+                        "CME_PL1",  # Platinum Futures, Continuous Contract
+                        "CME_CL1",  # Crude Oil Futures, Continuous Contract
+                        "CME_HG1",  # Copper Futures, Continuous Contract
+                        "CME_LB1",  # Random Length Lumber Futures, Continuous Contract
+                        "CME_NG1",  # Natural Gas (Henry Hub) Physical Futures, Continuous Contract
+                        "CME_PA1",  # Palladium Futures, Continuous Contract 
+                        "CME_RR1",  # Rough Rice Futures, Continuous Contract
+                        
+                        "ICE_CC1",  # Cocoa Futures, Continuous Contract 
+                        "ICE_CT1",  # Cotton No. 2 Futures, Continuous Contract
+                        "ICE_KC1",  # Coffee C Futures, Continuous Contract
+                        "ICE_O1",   # Heating Oil Futures, Continuous Contract
+                        "ICE_OJ1",  # Orange Juice Futures, Continuous Contract
+                        "ICE_SB1",  # Sugar No. 11 Futures, Continuous Contract
+                        
+                        "CME_AD1", # Australian Dollar Futures, Continuous Contract #1
+                        "CME_BP1", # British Pound Futures, Continuous Contract #1
+                        "CME_CD1", # Canadian Dollar Futures, Continuous Contract #1
+                        "CME_EC1", # Euro FX Futures, Continuous Contract #1
+                        "CME_JY1", # Japanese Yen Futures, Continuous Contract #1
+                        "CME_MP1", # Mexican Peso Futures, Continuous Contract #1
+                        #"CME_NE1",# New Zealand Dollar Futures, Continuous Contract #1    # Short history ~2007
+                        "CME_SF1", # Swiss Franc Futures, Continuous Contract #1
+                    
+                        "ICE_DX1",      # US Dollar Index Futures, Continuous Contract #1
+                        "CME_NQ1",      # E-mini NASDAQ 100 Futures, Continuous Contract #1
+                        "EUREX_FDAX1",  # DAX Futures, Continuous Contract #1
+                        "CME_ES1",      # E-mini S&P 500 Futures, Continuous Contract #1
+                        "EUREX_FSMI1",  # SMI Futures, Continuous Contract #1
+                        "EUREX_FSTX1",  # STOXX Europe 50 Index Futures, Continuous Contract #1
+                        "LIFFE_FCE1",   # CAC40 Index Futures, Continuous Contract #1
+                        "LIFFE_Z1",     # FTSE 100 Index Futures, Continuous Contract #1
+                        "SGX_NK1",      # SGX Nikkei 225 Index Futures, Continuous Contract #1
+                    
+                        "CME_TY1",      # 10 Yr Note Futures, Continuous Contract #1
+                        "CME_FV1",      # 5 Yr Note Futures, Continuous Contract #1
+                        "CME_TU1",      # 2 Yr Note Futures, Continuous Contract #1
+                        #"ASX_XT1",     # 10 Year Commonwealth Treasury Bond Futures, Continuous Contract #1   # 'Settlement price' instead of 'settle' on quandl. 
+                        #"ASX_YT1",     # 3 Year Commonwealth Treasury Bond Futures, Continuous Contract #1    # 'Settlement price' instead of 'settle' on quandl.
+                        "EUREX_FGBL1",  # Euro-Bund (10Y) Futures, Continuous Contract #1
+                        #"EUREX_FBTP1", # Long-Term Euro-BTP Futures, Continuous Contract #1   # Short history ~2010
+                        "EUREX_FGBM1",  # Euro-Bobl Futures, Continuous Contract #1
+                        "EUREX_FGBS1",  # Euro-Schatz Futures, Continuous Contract #1 
+                        "SGX_JB1",      # SGX 10-Year Mini Japanese Government Bond Futures
+                        "LIFFE_R1"      # Long Gilt Futures, Continuous Contract #1
+                        #"MX_CGB1",     # Ten-Year Government of Canada Bond Futures, Continuous Contract #1    # 'Settlement price' instead of 'settle' on quandl.
+                        ]
+self.lookup_period = 12*21
+self.SetWarmup(self.lookup_period)
+self.data = {}
+
+		# True -> Quantpedia data
+		# False -> Quandl free data - NOTE: Consider shorter backtest period in case you want to use quandl data.
+		self.use_quantpedia_data = True
+
+		if not self.use_quantpedia_data:
+			self.symbols = ['CHRIS/' + x for x in self.symbols]
+
+		for symbol in self.symbols:
+			data = None
+			if self.use_quantpedia_data:
+				data = self.AddData(QuantpediaFutures, symbol, Resolution.Daily)
+			else:
+				data = self.AddData(QuandlFutures, symbol, Resolution.Daily)
+			#data.SetLeverage(2)
+			self.data[symbol] = deque(maxlen=self.lookup_period)
+
+# Quantpedia data
+# NOTE: IMPORTANT: Data order must be ascending (datewise)
+class QuantpediaFutures(PythonData):
+    def GetSource(self, config, date, isLiveMode):
+        return SubscriptionDataSource("https://quantpedia.com/backtesting_data/futures/{0}.csv".format(config.Symbol.Value), SubscriptionTransportMedium.RemoteFile, FileFormat.Csv)
+
+    def Reader(self, config, line, date, isLiveMode):
+        data = QuantpediaFutures()
+        data.Symbol = config.Symbol
+        
+        try:
+            if not line[0].isdigit(): return None
+            split = line.split(';')
+            
+            data.Time = datetime.strptime(split[0], "%d.%m.%Y") + timedelta(days=1)
+            data['settle'] = float(split[1])
+            data.Value = float(split[1])
+        except:
+            return None
+            
+        return data
+
+# Quandl free data
+class QuandlFutures(PythonQuandl):
+    def __init__(self):
+        self.ValueColumnName = "Settle"
+
+------------------------------------
+
+
+-------------- Country shit -------------- 
+
+        self.symbols = {"AUD" : "ASX_YT1",        # 3 Year Commonwealth Treasury Bond Futures, Continuous Contract #1
+                        "GER" : "EUREX_FGBS1",    # Euro-Schatz Futures, Continuous Contract #1
+                        "USA" : "CME_TU1"         # 2 Yr Note Futures, Continuous Contract #1
+                        }
+
+        self.interest_rate_table = pd.read_csv('https://docs.google.com/spreadsheets/d/1o2sidcbWXjvayDY3HAh6SdFQ5_Tqq98xLTN4Wu1NtTs/export?format=csv', dtype={'date':str}, index_col='date') #   header=None)
+
+        lookup_period = 21
+        self.SetWarmUp(lookup_period)
+        self.data = {}
+        
+        # True -> Quantpedia data
+        # False -> Quandl free data
+        self.use_quantpedia_data = False
+        
+        if not self.use_quantpedia_data:
+            symbols2 = {}
+            currencies = [x for x in self.symbols]
+            symbols = [self.symbols[x] for x in self.symbols]
+            for curr,sym in zip(currencies, symbols):
+                symbols2[curr] = 'CHRIS/' + sym
+            
+            self.symbols = symbols2
+        
+        for symbol in self.symbols:
+            sym = self.symbols[symbol]
+            data = None
+            if self.use_quantpedia_data:
+                data = self.AddData(QuantpediaFutures, sym, Resolution.Daily)
+            else:
+                if symbol == 'AUD':
+                    data = self.AddData(QuandlFuturesAUD, sym, Resolution.Daily)
+                elif symbol == 'CAD':
+                    data = self.AddData(QuandlFuturesCAD, sym, Resolution.Daily)
+                else:
+                    data = self.AddData(QuandlFutures, sym, Resolution.Daily)
+            #data.SetLeverage(2)
+            self.data[sym] = deque(maxlen=lookup_period)
+
+        first_key = [x for x in self.symbols.keys()][0]
+        self.Schedule.On(self.DateRules.MonthStart(self.symbols[first_key]), self.TimeRules.AfterMarketOpen(self.symbols[first_key]), self.Rebalance)
+		
+class QuandlFutures(PythonQuandl):
+    def __init__(self):
+        self.ValueColumnName = "Settle"
+
+class QuandlFuturesAUD(PythonQuandl):
+    def __init__(self):
+        self.ValueColumnName = "Previous Settlement"
+
+class QuandlFuturesCAD(PythonQuandl):
+    def __init__(self):
+        self.ValueColumnName = "Settlement Price"
+
+
+#
+#
+# FETCHING multiple data columns
+
+class QuandlFINRA_ShortVolume(PythonQuandl):
+    def __init__(self):
+        self.ValueColumnName = 'SHORTVOLUME'    # also 'TOTALVOLUME' is accesible
+		
+total_vol = self.Securities['FINRA/FNSQ_' + symbol].GetLastData().GetProperty("TOTALVOLUME")
+-------------- -------------- -------------- 
+
+
+STOCK shit
+
+			fine = [x for x in fine if x.EarningReports.BasicAverageShares.ThreeMonths > 0 and x.EarningReports.BasicEPS.TwelveMonths > 0 and x.ValuationRatios.PERatio > 0]            # Market cap calc
+            market_cap[symbol] = float(stock.EarningReports.BasicAverageShares.ThreeMonths * (stock.EarningReports.BasicEPS.TwelveMonths*stock.ValuationRatios.PERatio))
+
+            # last month returns
+            hist = self.History([symbol], self.period, Resolution.Daily)
+            if 'close' in hist.columns:
+                closes = hist['close']
+                if len(closes) == self.period:
+                    returns = (closes[1:]-closes[:-1])/closes[:-1]
+                    max_daily_return[symbol] = max(returns)
+                #else: return
+
+
+        weight_ratio = 1 / sum([market_cap[sym] for sym in self.long + self.short if sym in market_cap])
+        for symbol in self.long + self.short:
+            if symbol in market_cap:
+                self.weights[symbol] = market_cap[symbol] * weight_ratio
+		
+		# v.2
+		market_cap_total = sum([market_cap[sym] for sym in self.long + self.short if sym in market_cap])
+        if market_cap_total != 0:
+            for symbol in self.long + self.short:
+                if symbol in market_cap:
+                    self.weight[symbol] = market_cap[symbol] / market_cap_total
+        else:
+             return []
+
+
+# Industry sorting
+            industry_group_code = stock.AssetClassification.MorningstarIndustryGroupCode
+            if industry_group_code == 0: continue
+            
+            # Adding stocks in groups
+            if not industry_group_code in group:
+                group[industry_group_code] = []
+            group[industry_group_code].append(symbol)
+			
+
+----Stocks monthly rebalance
+
+    def OnData(self, data):
+        if self.traded_this_month == True:
+            return
+
+        if len(self.long) == 0: 
+            self.traded_this_month = True
+            return
+        
+		# Trade execution
+        stocks_invested = [x.Key for x in self.Portfolio if x.Value.Invested]		# Symbol objects
+		#invested_pairs = [x.Key.Value for x in self.Portfolio if x.Value.Invested]	# Symbols itself
+        for symbol in stocks_invested:
+            if symbol not in self.long + self.short:
+                self.Liquidate(symbol)
+
+        count = len(self.long + self.short)
+        if count == 0: return
+        
+        for symbol in self.long:
+            self.SetHoldings(symbol, 1/count)
+        for symbol in self.short:
+            self.SetHoldings(symbol, -1/count)
+        
+        self.long.clear()
+        self.short.clear()
+        
+        self.traded_this_month = True
+		
+
+# Market cap execution
+        for symbol in self.long:
+            self.Securities[symbol].SetFeeModel(CustomFeeModel(self))
+            if symbol in self.weight:
+                self.SetHoldings(symbol, self.weight[symbol])
+        for symbol in self.short:
+            self.Securities[symbol].SetFeeModel(CustomFeeModel(self))
+            if symbol in self.weight:
+                self.SetHoldings(symbol, -self.weight[symbol])
+		
+
+# Custom Fee Model
+
+class CustomFeeModel(FeeModel):
+    def __init__(self, algorithm):
+        self.algorithm = algorithm
+
+    def GetOrderFee(self, parameters):
+        # custom fee math
+        fee = parameters.Security.Price * parameters.Order.AbsoluteQuantity * 0.00001
+        self.algorithm.Log("CustomFeeModel: " + str(fee))
+        return OrderFee(CashAmount(fee, "USD"))
+		
+# Usage: 
+        # Fee options
+        #data.FeeModel = ConstantFeeModel(0.5);
+        data.SetFeeModel(CustomFeeModel(self))
+		self.Securities[symbol].SetFeeModel(CustomFeeModel(self))
+
+    def OnSecuritiesChanged(self, changes):
+        for security in changes.AddedSecurities:
+            security.SetFeeModel(fk_tools.CustomFeeModel(self))
+
+
+
+
+		
+# mopnthly returns
+	separete_months = [closes[x:x+21] for x in range(0, len(closes),21)]
+	monthly_returns = []
+	for month in separete_months:
+		monthly_returns.append(self.Return([x for x in month]))
+	ret_volatility[symbol] = self.Volatility([x for x in monthly_returns])
+
+
+# BENCHMARK
+benchmark = self.AddEquity("SPY")
+self.SetBenchmark(benchmark.Symbol)
+
+
+
+# DAYS BEFORE EOM
+import pandas as pd
+from pandas.tseries.offsets import BDay
+from pandas.tseries.offsets import BMonthEnd
+
+offset = BMonthEnd()
+last_day = offset.rollforward(self.Time)
+trigger_day = last_day - BDay(3)
+
+
+# S&P 500 stock picking universe
+        self.UniverseSettings.Resolution = Resolution.Daily
+        self.AddUniverse(self.Universe.Index.QC500)
+		
+		# iteration
+		for symbol in self.Securities.Keys:
+		
+# Book to market ratio
+fine = [x for x in fine if x.ValuationRatios.PBRatio > 0]
+bm = 1 / stock.ValuationRatios.PBRatio
+
+
+
+
+# Linear regression
+
+import statsmodels.formula.api as sm
+
+        oil_monthly_returns = pd.Series([x for x in self.data[self.oil]])
+        spx_monthly_returns = pd.Series([x for x in self.data[self.spx]])
+        data_frame = pd.concat([spx_monthly_returns, oil_monthly_returns], axis = 1).dropna()
+        data_frame.columns = [ 'spx', 'oil' ]
+        model = sm.ols(formula = 'spx~oil', data = data_frame).fit()
+		#model = sm.ols(formula = 'Y~X', data = data_frame).fit()
+        
+        # Simple Linear Regression
+        # Y = C + (M * X)
+        # Y = α + (β ∗ X)
+        
+        # Multiple Linear Regression
+        # Y = C + (M1 * X1) + (M2 * X2) + …
+        # Y = α + (β ∗ X1) + (β ∗ X2) + ...
+
+        # Y = Dependent variable (output/outcome/prediction/estimation)
+        # C/α = Constant (Y-Intercept)
+        # M/β = Slope of the regression line (the effect that X has on Y)
+        # X = Independent variable (input variable used in the prediction of Y)
+        
+        alpha = model.params[0]
+        beta = model.params[1]
+        X = oil_ret	
+        Y = alpha + (beta * X)  # Expected SPX return
+		
+		
+# Custom data
+# Securities from custom data key
+class DemographicData(PythonData):
+    def GetSource(self, config, date, isLiveMode):
+        return SubscriptionDataSource("data.quantpedia.com/backtesting_data/economic/population_65_over.csv", SubscriptionTransportMedium.RemoteFile, FileFormat.Csv)
+
+    def Reader(self, config, line, date, isLiveMode):
+        data = DemographicData()
+        data.Symbol = config.Symbol
+        
+        if not line[0].isdigit(): return None
+        split = line.split(';')
+        
+        data.Time = datetime.strptime(split[0], "%Y")
+        data['AU'] = float(split[1])
+        data['AT'] = float(split[2])
+        data['BE'] = float(split[3])
+        data['CA'] = float(split[4])
+        data['FR'] = float(split[5])
+        data['DE'] = float(split[6])
+        data['IT'] = float(split[7])
+        data['JP'] = float(split[8])
+        data['NL'] = float(split[9])
+        data['ES'] = float(split[10])
+        data['SE'] = float(split[11])
+        data['CH'] = float(split[12])
+        data['GB'] = float(split[13])
+        data['US'] = float(split[14])
+            
+        data.Value = float(split[1])
+        return data
+
+# Data fetching
+self.Securities['CPI'].GetLastData()[key]
+
+
+
+# Trenching
+# Selection every n months but rebalance every n/m months
+# IN THIS CASE: Selection every 12 months but rebalance every month.
+	Init:
+        self.old_queue = []
+        self.new_queue = []
+        self.holding_period = 12
+        if self.course_count % self.holding_period != 0:
+            self.Error("self.course_count is not divisible by" + str(self.holding_period) + ", terminating algorithm.")
+            self.Quit() 
+        self.month = self.holding_period - 1
+
+	FineSelectionFunction:
+        self.old_queue = [x for x in self.new_queue]
+        self.new_queue = long
+        
+        return self.old_queue + self.new_queue
+
+    def Selection(self):
+        if self.month == self.holding_period:
+            self.selection_flag = True
+    
+	def Rebalance(self):
+        self.month += 1
+        if self.month > self.holding_period:
+            self.month = 1
+            
+        # Trade execution
+        count = len(self.new_queue)
+        if count == 0: return
+    
+        month = self.Time.month
+
+        partial_size = math.ceil(count / 12)
+        slice_index = (month-1)*partial_size
+        
+        if len(self.old_queue) != 0:
+            stocks_to_liquidate = [x for x in self.old_queue][slice_index : slice_index+partial_size]
+            for symbol in stocks_to_liquidate:
+                self.Liquidate(symbol)
+
+        # stocks_to_rebalance = [x for x in self.new_queue][slice_index : slice_index+partial_size]
+        stocks_to_rebalance = [x for x in self.new_queue][:slice_index+partial_size]
+        for symbol in stocks_to_rebalance:
+            self.SetHoldings(symbol, 1 / count)
+			
+			
+
+# CUSOTM UNIVERSE SELECTION WITH FUNDAMENTAL DATA
+
+self.AddUniverseSelection(FineFundamentalUniverseSelectionModel(self.SelectCoarse, self.SelectFine))
+
+self.fine = []
+self.symbols = fk_tools.sp100_stocks # array of tickers
+self.AddUniverseSelection(FineFundamentalUniverseSelectionModel(self.SelectCoarse, self.SelectFine))
+
+    def SelectCoarse(self, coarse):
+        return [Symbol.Create(x, SecurityType.Equity, Market.USA) for x in self.symbols]
+
+    def SelectFine(self, fine):
+        self.fine = [f.Symbol for f in fine] 
+        return self.fine
+		
+		
+
+#
+# Trenching v.2 - variable long and short portfolio lenght
+#
+        # Trenching
+        self.old_queue_long = []
+        self.old_queue_short = []
+        self.new_queue_long = []
+        self.new_queue_short = []
+        self.holding_period = 6
+        self.month = 1
+	
+	# fine
+	    long = [...]
+	    short = [...]
+		
+		# Sort symbols in queues to rebalance every month (1/self.holding_period of all symbols)
+        # Long
+        temp_queue_long = []
+        temp_queue_short = []
+        for i in range(0, self.holding_period):
+            temp_queue_long.append(RebalanceQueueItem())
+            temp_queue_short.append(RebalanceQueueItem())
+        
+        if len(long) <= self.holding_period:
+            for symbol_index in range(0, len(long)):
+                temp_queue_long[symbol_index].symbols.append(long[symbol_index])
+        else:
+            queue_index = 0
+            for symbol_index in range(0, len(long)):
+                temp_queue_long[queue_index].symbols.append(long[symbol_index])
+                
+                queue_index += 1
+                if queue_index > self.holding_period-1:
+                    queue_index = 0
+        
+        self.old_queue_long = [x for x in self.new_queue_long]
+        self.new_queue_long = temp_queue_long
+        
+        # Short
+        if len(short) <= self.holding_period:
+            for symbol_index in range(0, len(short)):
+                temp_queue_short[symbol_index].symbols.append(short[symbol_index])
+        else:
+            queue_index = 0
+            for symbol_index in range(0, len(short)):
+                temp_queue_short[queue_index].symbols.append(short[symbol_index])
+                
+                queue_index += 1
+                if queue_index > self.holding_period-1:
+                    queue_index = 0
+        
+        self.old_queue_short = [x for x in self.new_queue_short]
+        self.new_queue_short = temp_queue_short
+        
+        return long + short        
+
+    def Rebalance(self):
+        self.month += 1
+        if self.month > self.holding_period:
+            self.month = 1
+            
+        # Trade execution
+        count = sum([len(x.symbols) for x in self.new_queue_long]) + sum([len(x.symbols) for x in self.new_queue_short])
+        if count == 0: return
+    
+        # Liqidate old sets of stocks
+        if len(self.old_queue_long) != 0:
+            stocks_to_liquidate = self.old_queue_long[self.month - 1].symbols
+            for symbol in stocks_to_liquidate:
+                self.Liquidate(symbol)
+        if len(self.old_queue_short) != 0:
+            stocks_to_liquidate = self.old_queue_short[self.month - 1].symbols
+            for symbol in stocks_to_liquidate:
+                self.Liquidate(symbol)
+        
+        # Rebalance new stocks by slices
+        stocks_to_rebalance = self.new_queue_long[self.month - 1].symbols
+        for symbol in stocks_to_rebalance:
+            self.SetHoldings(symbol, 1 / count)
+            
+        stocks_to_rebalance = self.new_queue_short[self.month - 1].symbols
+        for symbol in stocks_to_rebalance:
+            self.SetHoldings(symbol, - 1 / count)
+
+class RebalanceQueueItem():
+    def __init__(self):
+        self.symbols = []
+
+def Selection(self):
+	if self.month == self.holding_period:
+		self.selection_flag = True
+	
+		
+
+# NEW SORTING
+sue_values = [x for x in self.sue]
+self.long = [x[0] for x in symbol_sue.items() if x[1] >= np.percentile(sue_values, 90)]
+self.short = [x[0] for x in symbol_sue.items() if x[1] <= np.percentile(sue_values, 10)]
+
+
+
+# QC csv import
+        csv_string_file = self.Download('data.quantpedia.com/backtesting_data/economic/fed_days.csv')
+        dates = csv_string_file.split('\r\n')
+        dates = [datetime.strptime(x, "%Y-%m-%d") for x in dates]
+
+
+
+
+
+# Trenching
+# Trenching
+# Trenching
+# Trenching
+
+        self.holding_period = 12
+        self.managed_queue = deque(maxlen = self.holding_period + 2)
+
+		if len(nid) == 0: 
+			# Store empty item.
+            self.managed_queue.append(RebalanceQueueItem([], []))
+            return []
+
+		long = [.... and not self.IsInvested(x[0])]
+		short = [.... and not self.IsInvested(x[0])]
+		self.managed_queue.append(RebalanceQueueItem(long, short))
+
+    def IsInvested(self, symbol):
+        return self.Securities.ContainsKey(symbol) and self.Portfolio[symbol].Invested
+		
+    def Rebalance(self):
+        # Trade execution
+        if len(self.managed_queue) == 0: return
+    
+        # Liquidate first items if queue is full
+        if len(self.managed_queue) == self.managed_queue.maxlen:
+            item_to_liquidate = self.managed_queue.popleft()
+            for symbol in item_to_liquidate.long_symbols + item_to_liquidate.short_symbols:
+                self.Liquidate(symbol)
+            
+        curr_stock_set = self.managed_queue[-1]
+        if curr_stock_set.count == 0: return
+    
+        weight = 1 / (self.holding_period * curr_stock_set.count)
+        
+        # Open new trades.
+        for symbol in curr_stock_set.long_symbols:
+            self.SetHoldings(symbol, weight)
+            
+        for symbol in curr_stock_set.short_symbols:
+            self.SetHoldings(symbol, -weight)
+
+class RebalanceQueueItem():
+    def __init__(self, long_symbols, short_symbols):
+        self.long_symbols = long_symbols
+        self.short_symbols = short_symbols
+        self.count = len(long_symbols + short_symbols)
+		
+		
+		
+		
+		
+		
+		
+		
+		
+#		
+# Refined stock universe
+#
+
+	def Initialize(self):
+        self.SetStartDate(2000, 1, 1)  
+        self.SetCash(100000) 
+
+        self.symbol = 'SPY'
+        self.AddEquity(self.symbol, Resolution.Daily)
+        
+        self.course_count = 1000
+        
+        self.long = []
+        self.short = []
+        
+        self.selection_flag = False
+        self.rebalance_flag = False
+        self.UniverseSettings.Resolution = Resolution.Daily
+        self.AddUniverse(self.CoarseSelectionFunction, self.FineSelectionFunction)
+        
+        self.Schedule.On(self.DateRules.MonthEnd(self.symbol), self.TimeRules.AfterMarketOpen(self.symbol), self.Selection)
+		
+    def OnSecuritiesChanged(self, changes):
+        for security in changes.AddedSecurities:
+            security.SetFeeModel(fk_tools.CustomFeeModel(self))
+			
+    def CoarseSelectionFunction(self, coarse):
+        if not self.selection_flag:
+            return Universe.Unchanged
+        
+        self.selection_flag = False
+        
+        selected = sorted([x for x in coarse if x.HasFundamentalData and x.Market == 'usa' and x.Price > 5],
+            key=lambda x: x.DollarVolume, reverse=True)
+			
+    def OnData(self, data):
+        if not self.rebalance_flag:
+            return
+        self.rebalance_flag = False
+
+        # Trade execution
+        count = len(self.long + self.short)
+        if count == 0: 
+			self.Liquidate()
+			return
+
+        stocks_invested = [x.Key for x in self.Portfolio if x.Value.Invested]
+        for symbol in stocks_invested:
+            if symbol not in self.long + self.short:
+                self.Liquidate(symbol)
+
+        for symbol in self.long:
+            if self.Securities[symbol].Price != 0:  # Prevent error message.
+                self.SetHoldings(symbol, 1 / count)
+        for symbol in self.short:
+            if self.Securities[symbol].Price != 0:  # Prevent error message.
+                self.SetHoldings(symbol, -1 / count)
+
+        self.long.clear()
+        self.short.clear()
+    
+    def Selection(self):
+        self.selection_flag = True
+		
+
+
+# csv to dataframe
+        # Bond yield dataframe.
+        csv_string_file = self.Download('data.quantpedia.com/backtesting_data/economic/bond_yield_10year.csv')
+        lines = csv_string_file.split('\r\n')
+        columns = [x for x in lines[0].split(';')[1:]]
+        index = [line.split(';')[0] for line in lines[1:]]
+        data = [line.split(';')[1:] for line in lines[1:]]

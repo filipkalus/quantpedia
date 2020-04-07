@@ -107,9 +107,9 @@ class TradeManager():
     def LiquidateTicker(self, ticker):
         symbol_to_delete = None
         for managed_symbol in self.symbols:
-            if managed_symbol.Value == ticker:
+            if managed_symbol.symbol.Value == ticker:
                 self.algorithm.Liquidate(managed_symbol.symbol)
-                
+                symbol_to_delete = managed_symbol
                 if managed_symbol.long_flag: self.long_len -= 1
                 else: self.short_len -= 1
                 

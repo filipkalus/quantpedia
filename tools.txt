@@ -439,14 +439,19 @@ trigger_day = last_day - BDay(3)
         self.UniverseSettings.Resolution = Resolution.Daily
         self.AddUniverse(self.Universe.Index.QC500)
 		
+		    def OnSecuritiesChanged(self, changes):
+        for security in changes.AddedSecurities:
+            security.SetFeeModel(fk_tools.CustomFeeModel(self))
+            self.sp500_stocks.append(security)
+        for security in changes.RemovedSecurities:
+            self.sp500_stocks.remove(security)
+			
 		# iteration
 		for symbol in self.Securities.Keys:
 		
 # Book to market ratio
 fine = [x for x in fine if x.ValuationRatios.PBRatio > 0]
 bm = 1 / stock.ValuationRatios.PBRatio
-
-
 
 
 # Linear regression
@@ -821,3 +826,12 @@ class RebalanceQueueItem():
         columns = [x for x in lines[0].split(';')[1:]]
         index = [line.split(';')[0] for line in lines[1:]]
         data = [line.split(';')[1:] for line in lines[1:]]
+		
+		
+		
+# scipy regression
+from scipy import stats
+            # Y = α + (β ∗ X)
+            # intercept = alpha
+            # slope = beta
+            slope, intercept, r_value, p_value, std_err = stats.linregress(market_factor, excess_return)

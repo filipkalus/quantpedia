@@ -78,6 +78,9 @@ class TradeManager():
                 self.symbols.append(managed_symbol)
                 self.algorithm.SetHoldings(symbol, self.weight)
                 self.long_len += 1
+            else:
+                self.algorithm.Log("There's not place for additional trade.")
+
         # Open new short trade.
         else:
             # If there's a place for it.
@@ -85,6 +88,8 @@ class TradeManager():
                 self.symbols.append(managed_symbol)
                 self.algorithm.SetHoldings(symbol, - self.weight)
                 self.short_len += 1
+            else:
+                self.algorithm.Log("There's not place for additional trade.")
     
     # Decrement holding period and liquidate symbols.
     def TryLiquidate(self):

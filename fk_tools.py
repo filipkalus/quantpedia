@@ -84,7 +84,7 @@ class TradeManager():
         # Open new short trade.
         else:
             # If there's a place for it.
-            if self.long_len < self.short_size:
+            if self.short_len < self.short_size:
                 self.symbols.append(managed_symbol)
                 self.algorithm.SetHoldings(symbol, - self.weight)
                 self.short_len += 1

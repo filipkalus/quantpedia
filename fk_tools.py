@@ -30,11 +30,11 @@ class QuandlFINRA_ShortVolume(PythonQuandl):
     def __init__(self):
         self.ValueColumnName = 'SHORTVOLUME'    # also 'TOTALVOLUME' is accesible
 
-# Quantpedia data
+# Quantpedia futures data - back adjusted.
 # NOTE: IMPORTANT: Data order must be ascending (datewise)
 class QuantpediaFutures(PythonData):
     def GetSource(self, config, date, isLiveMode):
-        return SubscriptionDataSource("data.quantpedia.com/backtesting_data/futures/{0}.csv".format(config.Symbol.Value), SubscriptionTransportMedium.RemoteFile, FileFormat.Csv)
+        return SubscriptionDataSource("data.quantpedia.com/backtesting_data/futures/back_adjusted/{0}.csv".format(config.Symbol.Value), SubscriptionTransportMedium.RemoteFile, FileFormat.Csv)
 
     def Reader(self, config, line, date, isLiveMode):
         data = QuantpediaFutures()
@@ -43,11 +43,30 @@ class QuantpediaFutures(PythonData):
         if not line[0].isdigit(): return None
         split = line.split(';')
         
-        data.Time = datetime.strptime(split[0], "%d.%m.%Y") + timedelta(days=1)
+        data.Time = datetime.strptime(split[0], "%Y%m%d") + timedelta(days=1)
         data['settle'] = float(split[1])
         data.Value = float(split[1])
 
         return data
+		
+# Quantpedia data
+# NOTE: IMPORTANT: Data order must be ascending (datewise)
+# class QuantpediaFutures(PythonData):
+#     def GetSource(self, config, date, isLiveMode):
+#         return SubscriptionDataSource("data.quantpedia.com/backtesting_data/futures/{0}.csv".format(config.Symbol.Value), SubscriptionTransportMedium.RemoteFile, FileFormat.Csv)
+
+#     def Reader(self, config, line, date, isLiveMode):
+#         data = QuantpediaFutures()
+#         data.Symbol = config.Symbol
+        
+#         if not line[0].isdigit(): return None
+#         split = line.split(';')
+        
+#         data.Time = datetime.strptime(split[0], "%d.%m.%Y") + timedelta(days=1)
+#         data['settle'] = float(split[1])
+#         data.Value = float(split[1])
+
+#         return data
         
 # NOTE: Manager for new trades. It's represented by certain count of equally weighted brackets for long and short positions.
 # If there's a place for new trade, it will be managed for time of holding period.

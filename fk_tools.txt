@@ -75,7 +75,7 @@ class TradeManager():
             # If there's a place for it.
             if self.long_len < self.long_size:
                 self.symbols.append(managed_symbol)
-                self.algorithm.SetHoldings(symbol, 1 / self.long_len)
+                self.algorithm.SetHoldings(symbol, 1 / self.long_size)
                 self.long_len += 1
             else:
                 self.algorithm.Log("There's not place for additional trade.")
@@ -85,7 +85,7 @@ class TradeManager():
             # If there's a place for it.
             if self.short_len < self.short_size:
                 self.symbols.append(managed_symbol)
-                self.algorithm.SetHoldings(symbol, - 1 / self.short_len))
+                self.algorithm.SetHoldings(symbol, - 1 / self.short_size))
                 self.short_len += 1
             else:
                 self.algorithm.Log("There's not place for additional trade.")

@@ -47,7 +47,7 @@ class QuantpediaFutures(PythonData):
         data['settle'] = float(split[1])
         data.Value = float(split[1])
 
-#         return data
+        return data
         
 # NOTE: Manager for new trades. It's represented by certain count of equally weighted brackets for long and short positions.
 # If there's a place for new trade, it will be managed for time of holding period.

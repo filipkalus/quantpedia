@@ -14,6 +14,17 @@ def Volatility(values):
     returns = (values[1:] - values[:-1]) / values[:-1]
     return np.std(returns)  
 
+def GetFutureMulitpliers(algorithm):
+    symbol_multiplier = {}
+    
+    csv_string_file = algorithm.Download('data.quantpedia.com/backtesting_data/futures/contract_multiplier.csv')
+    mulitpliers_lines = csv_string_file.split('\r\n')
+    for line in mulitpliers_lines:
+        symbol, multiplier = line.split(';')
+        symbol_multiplier[symbol] = multiplier
+    
+    return symbol_multiplier
+
 # Custom fee model
 class CustomFeeModel(FeeModel):
     def GetOrderFee(self, parameters):

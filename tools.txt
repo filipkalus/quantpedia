@@ -10,6 +10,24 @@
 						last_price = self.data[symbol][-1]
 						self.data[symbol].append(last_price)
 
+
+# Futures version.
+    def OnData(self, data):
+        # Store daily data.
+        for symbol in self.symbols:
+            if self.Securities.ContainsKey(symbol):
+                price_data = self.Securities[symbol].GetLastData()
+                if price_data:
+                    back_adjusted = price_data['back_adjusted']
+                    spliced = price_data['spliced']
+                    
+                    if back_adjusted != 0 and spliced != 0:
+                        self.data[symbol].append((back_adjusted,spliced))
+                    else:
+                        # Append latest prices as a next one in case there's 0 as a price.
+                        if len(self.data[symbol]) > 0:
+                            last_price = self.data[symbol][-1]
+                            self.data[symbol].append(last_price)
 # fast way
 		
 		if self.IsWarmingUp: return
@@ -126,7 +144,8 @@ self.symbols = ["CME_S1",   # Soybean Futures, Continuous Contract
 				]
 
 # Futures - complete
-        self.symbols = ["CME_S1",   # Soybean Futures, Continuous Contract
+        self.symbols = [
+						"CME_S1",   # Soybean Futures, Continuous Contract
                         "CME_W1",   # Wheat Futures, Continuous Contract
                         "CME_SM1",  # Soybean Meal Futures, Continuous Contract
                         "CME_BO1",  # Soybean Oil Futures, Continuous Contract
@@ -144,14 +163,16 @@ self.symbols = ["CME_S1",   # Soybean Futures, Continuous Contract
                         "CME_NG1",  # Natural Gas (Henry Hub) Physical Futures, Continuous Contract
                         "CME_PA1",  # Palladium Futures, Continuous Contract 
                         "CME_RR1",  # Rough Rice Futures, Continuous Contract
-                        
+                        "CME_CU1",  # Chicago Ethanol (Platts) Futures
+						"CME_DA1",  # Class III Milk Futures
+						
                         "ICE_CC1",  # Cocoa Futures, Continuous Contract 
                         "ICE_CT1",  # Cotton No. 2 Futures, Continuous Contract
                         "ICE_KC1",  # Coffee C Futures, Continuous Contract
                         "ICE_O1",   # Heating Oil Futures, Continuous Contract
                         "ICE_OJ1",  # Orange Juice Futures, Continuous Contract
                         "ICE_SB1",  # Sugar No. 11 Futures, Continuous Contract
-                        
+						                        
                         "CME_AD1", # Australian Dollar Futures, Continuous Contract #1
                         "CME_BP1", # British Pound Futures, Continuous Contract #1
                         "CME_CD1", # Canadian Dollar Futures, Continuous Contract #1
@@ -170,7 +191,8 @@ self.symbols = ["CME_S1",   # Soybean Futures, Continuous Contract
                         "LIFFE_FCE1",   # CAC40 Index Futures, Continuous Contract #1
                         "LIFFE_Z1",     # FTSE 100 Index Futures, Continuous Contract #1
                         "SGX_NK1",      # SGX Nikkei 225 Index Futures, Continuous Contract #1
-                    
+						"CME_MD1",		# E-mini S&P MidCap 400 Futures
+						
                         "CME_TY1",      # 10 Yr Note Futures, Continuous Contract #1
                         "CME_FV1",      # 5 Yr Note Futures, Continuous Contract #1
                         "CME_TU1",      # 2 Yr Note Futures, Continuous Contract #1
@@ -183,7 +205,17 @@ self.symbols = ["CME_S1",   # Soybean Futures, Continuous Contract
                         "SGX_JB1",      # SGX 10-Year Mini Japanese Government Bond Futures
                         "LIFFE_R1"      # Long Gilt Futures, Continuous Contract #1
                         #"MX_CGB1",     # Ten-Year Government of Canada Bond Futures, Continuous Contract #1    # 'Settlement price' instead of 'settle' on quandl.
-                        ]
+						"ASX_YAP1",		# S&P/ASX 200 Gross Total Return (TR) Index Futures
+                        
+						"CME_ED1",		# Eurodollar Futures, Continuous Contract #1
+						"CME_GI1",		# S&P-GSCI Commodity Index Future, Continuous Contract #1
+						"CME_FF1",		# 30 Day Federal Funds Futures, Continuous Contract #1 
+						"CME_UL1",		# Ultra U.S. Treasury Bond Futures, Continuous Contract #1
+						"CME_US1",		# U.S. Treasury Bond Futures, Continuous Contract #1
+						"CME_BTC1",		# Bitcoin Futures
+						"CBOE_VX1",		# S&P 500 Volatility Index VIX Futures, Continuous Contract #1 
+						"ICE_TF1"		# ICE Endex Dutch TTF 1-Month Calendar Spread Options
+						]
 self.lookup_period = 12*21
 self.SetWarmup(self.lookup_period)
 self.data = {}

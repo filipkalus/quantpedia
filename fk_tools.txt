@@ -41,7 +41,7 @@ class QuandlFINRA_ShortVolume(PythonQuandl):
     def __init__(self):
         self.ValueColumnName = 'SHORTVOLUME'    # also 'TOTALVOLUME' is accesible
 
-# Quantpedia data
+# Quantpedia data.
 # NOTE: IMPORTANT: Data order must be ascending (datewise)
 class QuantpediaFutures(PythonData):
     def GetSource(self, config, date, isLiveMode):
@@ -55,10 +55,11 @@ class QuantpediaFutures(PythonData):
         split = line.split(';')
         
         data.Time = datetime.strptime(split[0], "%d.%m.%Y") + timedelta(days=1)
-        data['settle'] = float(split[1])
+        data['back_adjusted'] = float(split[1])
+        data['spliced'] = float(split[2])
         data.Value = float(split[1])
 
-		return data
+        return data
         
 # NOTE: Manager for new trades. It's represented by certain count of equally weighted brackets for long and short positions.
 # If there's a place for new trade, it will be managed for time of holding period.

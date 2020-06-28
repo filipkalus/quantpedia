@@ -60,6 +60,40 @@ class QuantpediaFutures(PythonData):
         data.Value = float(split[1])
 
         return data
+
+# Commitments of Traders data.
+# NOTE: IMPORTANT: Data order must be ascending (datewise).
+# Data source: https://commitmentsoftraders.org/cot-data/
+# Data description: https://commitmentsoftraders.org/wp-content/uploads/Static/CoTData/file_key.html
+class CommitmentsOfTraders(PythonData):
+    def GetSource(self, config, date, isLiveMode):
+        return SubscriptionDataSource("data.quantpedia.com/backtesting_data/futures/cot/{0}.PRN".format(config.Symbol.Value), SubscriptionTransportMedium.RemoteFile, FileFormat.Csv)
+
+    # File example.
+    # DATE   OPEN     HIGH        LOW       CLOSE     VOLUME   OI
+    # ----   ----     ----        ---       -----     ------   --
+    # DATE   LARGE    SPECULATOR  COMMERCIAL HEDGER   SMALL TRADER
+    #        LONG     SHORT       LONG      SHORT     LONG     SHORT
+    def Reader(self, config, line, date, isLiveMode):
+        data = CommitmentsOfTraders()
+        data.Symbol = config.Symbol
+        
+        if not line[0].isdigit(): return None
+        split = line.split(',')
+        
+        # Prevent lookahead bias.
+        data.Time = datetime.strptime(split[0], "%Y%m%d") + timedelta(days=1)
+        
+        data['LARGE_SPECULATOR_LONG'] = int(split[1])
+        data['LARGE_SPECULATOR_SHORT'] = int(split[2])
+        data['COMMERCIAL_HEDGER_LONG'] = int(split[3])
+        data['COMMERCIAL_HEDGER_SHORT'] = int(split[4])
+        data['SMALL_TRADER_LONG'] = int(split[5])
+        data['SMALL_TRADER_SHORT'] = int(split[6])
+
+        data.Value = int(split[1])
+
+        return data
         
 # NOTE: Manager for new trades. It's represented by certain count of equally weighted brackets for long and short positions.
 # If there's a place for new trade, it will be managed for time of holding period.

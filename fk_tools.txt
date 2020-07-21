@@ -14,17 +14,6 @@ def Volatility(values):
     returns = (values[1:] - values[:-1]) / values[:-1]
     return np.std(returns)  
 
-def GetFutureMulitpliers(algorithm):
-    symbol_multiplier = {}
-    
-    csv_string_file = algorithm.Download('data.quantpedia.com/backtesting_data/futures/contract_multiplier.csv')
-    mulitpliers_lines = csv_string_file.split('\r\n')
-    for line in mulitpliers_lines:
-        symbol, multiplier = line.split(';')
-        symbol_multiplier[symbol] = multiplier
-    
-    return symbol_multiplier
-
 # Custom fee model
 class CustomFeeModel(FeeModel):
     def GetOrderFee(self, parameters):
@@ -40,6 +29,40 @@ class QuandlFutures(PythonQuandl):
 class QuandlFINRA_ShortVolume(PythonQuandl):
     def __init__(self):
         self.ValueColumnName = 'SHORTVOLUME'    # also 'TOTALVOLUME' is accesible
+
+# Commitments of Traders data.
+# NOTE: IMPORTANT: Data order must be ascending (datewise).
+# Data source: https://commitmentsoftraders.org/cot-data/
+# Data description: https://commitmentsoftraders.org/wp-content/uploads/Static/CoTData/file_key.html
+class CommitmentsOfTraders(PythonData):
+    def GetSource(self, config, date, isLiveMode):
+        return SubscriptionDataSource("data.quantpedia.com/backtesting_data/futures/cot/{0}.PRN".format(config.Symbol.Value), SubscriptionTransportMedium.RemoteFile, FileFormat.Csv)
+
+    # File example.
+    # DATE   OPEN     HIGH        LOW       CLOSE     VOLUME   OI
+    # ----   ----     ----        ---       -----     ------   --
+    # DATE   LARGE    SPECULATOR  COMMERCIAL HEDGER   SMALL TRADER
+    #        LONG     SHORT       LONG      SHORT     LONG     SHORT
+    def Reader(self, config, line, date, isLiveMode):
+        data = CommitmentsOfTraders()
+        data.Symbol = config.Symbol
+        
+        if not line[0].isdigit(): return None
+        split = line.split(',')
+        
+        # Prevent lookahead bias.
+        data.Time = datetime.strptime(split[0], "%Y%m%d") + timedelta(days=1)
+        
+        data['LARGE_SPECULATOR_LONG'] = int(split[1])
+        data['LARGE_SPECULATOR_SHORT'] = int(split[2])
+        data['COMMERCIAL_HEDGER_LONG'] = int(split[3])
+        data['COMMERCIAL_HEDGER_SHORT'] = int(split[4])
+        data['SMALL_TRADER_LONG'] = int(split[5])
+        data['SMALL_TRADER_SHORT'] = int(split[6])
+        data['open_interest'] = int(split[1]) + int(split[2]) + int(split[3]) + int(split[4]) + int(split[5]) + int(split[6])
+        data.Value = int(split[1])
+
+        return data
 
 # Quantpedia bond yield data.
 # NOTE: IMPORTANT: Data order must be ascending (datewise)

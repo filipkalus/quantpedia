@@ -43,6 +43,25 @@ class QuandlFINRA_ShortVolume(PythonQuandl):
 
 # Quantpedia bond yield data.
 # NOTE: IMPORTANT: Data order must be ascending (datewise)
+class QuantpediaIndices(PythonData):
+    def GetSource(self, config, date, isLiveMode):
+        return SubscriptionDataSource("data.quantpedia.com/backtesting_data/index/{0}.csv".format(config.Symbol.Value), SubscriptionTransportMedium.RemoteFile, FileFormat.Csv)
+
+    def Reader(self, config, line, date, isLiveMode):
+        data = QuantpediaIndices()
+        data.Symbol = config.Symbol
+        
+        if not line[0].isdigit(): return None
+        split = line.split(',')
+        
+        data.Time = datetime.strptime(split[0], "%Y-%m-%d") + timedelta(days=1)
+        data['close'] = float(split[1])
+        data.Value = float(split[1])
+
+        return data
+
+# Quantpedia bond yield data.
+# NOTE: IMPORTANT: Data order must be ascending (datewise)
 class QuantpediaBondYield(PythonData):
     def GetSource(self, config, date, isLiveMode):
         return SubscriptionDataSource("data.quantpedia.com/backtesting_data/bond_yield/{0}.csv".format(config.Symbol.Value), SubscriptionTransportMedium.RemoteFile, FileFormat.Csv)

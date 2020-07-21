@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.optimize import minimize
+import statsmodels.api as sm
 
 sp100_stocks = ['AAPL','MSFT','AMZN','FB','BRKB','GOOGL','GOOG','JPM','JNJ','V','PG','XOM','UNH','BAC','MA','T','DIS','INTC','HD','VZ','MRK','PFE','CVX','KO','CMCSA','CSCO','PEP','WFC','C','BA','ADBE','WMT','CRM','MCD','MDT','BMY','ABT','NVDA','NFLX','AMGN','PM','PYPL','TMO','COST','ABBV','ACN','HON','NKE','UNP','UTX','NEE','IBM','TXN','AVGO','LLY','ORCL','LIN','SBUX','AMT','LMT','GE','MMM','DHR','QCOM','CVS','MO','LOW','FIS','AXP','BKNG','UPS','GILD','CHTR','CAT','MDLZ','GS','USB','CI','ANTM','BDX','TJX','ADP','TFC','CME','SPGI','COP','INTU','ISRG','CB','SO','D','FISV','PNC','DUK','SYK','ZTS','MS','RTN','AGN','BLK']
 
@@ -14,6 +15,12 @@ def Volatility(values):
     returns = (values[1:] - values[:-1]) / values[:-1]
     return np.std(returns)  
 
+def MultipleLinearRegresion(x, y):
+    x = np.array(x).T
+    x = sm.add_constant(x)
+    result = sm.OLS(endog=y, exog=x).fit()
+    return result
+    
 # Custom fee model
 class CustomFeeModel(FeeModel):
     def GetOrderFee(self, parameters):

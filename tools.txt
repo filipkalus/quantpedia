@@ -439,9 +439,6 @@ class CustomFeeModel(FeeModel):
         for security in changes.AddedSecurities:
             security.SetFeeModel(fk_tools.CustomFeeModel(self))
 
-
-
-
 		
 # mopnthly returns
 	separete_months = [closes[x:x+21] for x in range(0, len(closes),21)]
@@ -867,3 +864,50 @@ from scipy import stats
             # intercept = alpha
             # slope = beta
             slope, intercept, r_value, p_value, std_err = stats.linregress(market_factor, excess_return)
+
+
+
+# beta calc.
+                # Data is ready.
+                if len(self.data[self.symbol]) == self.data[self.symbol].maxlen and len(self.data[symbol]) == self.data[symbol].maxlen:
+                    market_closes = np.array([x for x in self.data[self.symbol]])
+                    stock_closes = np.array([x for x in self.data[symbol]])
+                        
+                    market_returns = (market_closes[1:] - market_closes[:-1]) / market_closes[:-1]
+                    stock_returns = (stock_closes[1:] - stock_closes[:-1]) / stock_closes[:-1]
+                    
+                    cov = np.cov(market_returns, stock_returns)[0][1]
+                    market_variance = np.std(market_returns) ** 2
+                    beta[symbol] = cov / market_variance
+					
+					
+# trade manager rebalance and selection.
+    def DayClose(self):
+        if not self.rebalance_flag: 
+            return
+        self.rebalance_flag = False
+                        
+        # Open new trades.
+        for symbol in self.long:
+            self.trade_manager.Add(symbol, True)
+        for symbol in self.short:
+            self.trade_manager.Add(symbol, False)
+        
+        self.trade_manager.TryLiquidate()
+        
+        self.long.clear()
+        self.short.clear()
+		
+	
+	def Selection(self):
+        self.selection_flag = True
+        
+        # Every three months.    
+        if self.month % 3 == 0:
+            # Save quarter history.
+            self.acceleration_previous_quarter = [x for x in self.acceleration_actual_quarter]
+            self.acceleration_actual_quarter.clear()
+
+        self.month += 1
+        if self.month > 12:
+            self.month = 1

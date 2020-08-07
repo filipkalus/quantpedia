@@ -32,6 +32,11 @@ class QuandlFutures(PythonQuandl):
     def __init__(self):
         self.ValueColumnName = "settle"
 
+# Quandl "value" data
+class QuandlValue(PythonQuandl):
+    def __init__(self):
+        self.ValueColumnName = 'Value'
+
 # Quandl short interest data.
 class QuandlFINRA_ShortVolume(PythonQuandl):
     def __init__(self):

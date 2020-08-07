@@ -5,7 +5,7 @@
 				if price != 0:
 					self.data[symbol].append(price)
 				else:
-					# Append latest price as a next one in case there's 0 as price.
+					# Append previous price as a next one in case there's 0 as price.
 					if len(self.data[symbol]) > 0:
 						last_price = self.data[symbol][-1]
 						self.data[symbol].append(last_price)
@@ -911,3 +911,37 @@ from scipy import stats
         self.month += 1
         if self.month > 12:
             self.month = 1
+			
+			
+			
+# Yield symbols and interbank rates.
+        # Symbols - Currency futures, 10Y bond yield, cash rate data.
+        # Cash rate source: https://www.quandl.com/data/OECD-Organisation-for-Economic-Co-operation-and-Development
+        self.symbols = [
+                        ('CME_AD1', 'AU10YT', 'OECD/KEI_IR3TIB01_AUS_ST_M'), # Australian Dollar Futures, Continuous Contract #1
+                        ('CME_CD1', 'CA10YT', 'OECD/KEI_IR3TIB01_CAN_ST_M'), # Canadian Dollar Futures, Continuous Contract #1
+                        ('CME_SF1', 'CH10YT', 'SNB/ZIMOMA'),                 # Swiss Franc Futures, Continuous Contract #1
+                        ('CME_EC1', 'DE10YT', 'OECD/KEI_IR3TIB01_EA19_ST_M'),# Euro FX Futures, Continuous Contract #1
+                        ('CME_BP1', 'GB10YT', 'OECD/KEI_IR3TIB01_GBR_ST_M'), # British Pound Futures, Continuous Contract #1
+                        ('CME_JY1', 'JP10YT', 'OECD/KEI_IR3TIB01_JPN_ST_M'), # Japanese Yen Futures, Continuous Contract #1
+                        ('CME_NE1', 'NZ10YT', 'OECD/KEI_IR3TIB01_NZL_ST_M')  # New Zealand Dollar Futures, Continuous Contract #1
+                        ]
+						
+						
+        for currency_future, bond_yield_symbol, cash_rate_symbol in self.symbols:
+            # Currency futures data.
+            data = self.AddData(fk_tools.QuantpediaFutures, currency_future, Resolution.Daily)
+            data.SetFeeModel(fk_tools.CustomFeeModel(self))
+            data.SetLeverage(5)
+            
+            # Bond yield data.
+            self.AddData(fk_tools.QuantpediaBondYield, bond_yield_symbol, Resolution.Daily)
+            
+            # Interbank rate data.
+            self.AddData(QuandlRate, cash_rate_symbol, Resolution.Daily)
+			
+			
+			
+# QC implementation changes:
+#   - Instead of top 30% market cap firms, we select 500 most liquid stock from QC filtered stock universe (~8000 stocks) due to time complexity issues tied to whole universe filtering.
+			

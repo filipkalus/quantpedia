@@ -924,7 +924,8 @@ from scipy import stats
                         ('CME_EC1', 'DE10YT', 'OECD/KEI_IR3TIB01_EA19_ST_M'),# Euro FX Futures, Continuous Contract #1
                         ('CME_BP1', 'GB10YT', 'OECD/KEI_IR3TIB01_GBR_ST_M'), # British Pound Futures, Continuous Contract #1
                         ('CME_JY1', 'JP10YT', 'OECD/KEI_IR3TIB01_JPN_ST_M'), # Japanese Yen Futures, Continuous Contract #1
-                        ('CME_NE1', 'NZ10YT', 'OECD/KEI_IR3TIB01_NZL_ST_M')  # New Zealand Dollar Futures, Continuous Contract #1
+                        ('CME_NE1', 'NZ10YT', 'OECD/KEI_IR3TIB01_NZL_ST_M'),  # New Zealand Dollar Futures, Continuous Contract #1
+						"CME_MP1" : "OECD/KEI_IR3TIB01_MEX_ST_M" # Mexican Peso Futures, Continuous Contract #1
                         ]
 						
 						
@@ -944,4 +945,8 @@ from scipy import stats
 			
 # QC implementation changes:
 #   - Instead of top 30% market cap firms, we select 500 most liquid stock from QC filtered stock universe (~8000 stocks) due to time complexity issues tied to whole universe filtering.
+			
+			
+        # Risk free rate.
+        self.risk_free_rate = self.AddData(fk_tools.QuandlValue, 'FRED/DGS3MO', Resolution.Daily).Symbol
 			

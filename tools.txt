@@ -1,5 +1,5 @@
 	def OnData(self, data):
-		for symbol in self.symbols:
+		for symbol in self.data:
 			if self.Securities.ContainsKey(symbol):
 				price = self.Securities[symbol].Price
 				if price != 0:
@@ -9,6 +9,15 @@
 					if len(self.data[symbol]) > 0:
 						last_price = self.data[symbol][-1]
 						self.data[symbol].append(last_price)
+...................................................
+    def OnData(self, data):
+        for symbol in self.data:
+            symbol_obj = self.Symbol(symbol)
+            if symbol_obj in data.Keys:
+                if data[symbol_obj]:
+                    price = data[symbol_obj].Value
+                    if price != 0:
+                        self.data[symbol].append(price)
 
 
 # Futures version.
@@ -116,31 +125,34 @@ for symbol in losers:
 
 
 # Futures - commodities
-self.symbols = ["CME_S1",   # Soybean Futures, Continuous Contract
-				"CME_W1",   # Wheat Futures, Continuous Contract
-				"CME_SM1",  # Soybean Meal Futures, Continuous Contract
-				"CME_BO1",  # Soybean Oil Futures, Continuous Contract
-				"CME_C1",   # Corn Futures, Continuous Contract
-				"CME_O1",   # Oats Futures, Continuous Contract
-				"CME_LC1",  # Live Cattle Futures, Continuous Contract
-				"CME_FC1",  # Feeder Cattle Futures, Continuous Contract
-				"CME_LN1",  # Lean Hog Futures, Continuous Contract
-				"CME_GC1",  # Gold Futures, Continuous Contract
-				"CME_SI1",  # Silver Futures, Continuous Contract
-				"CME_PL1",  # Platinum Futures, Continuous Contract
-				"CME_CL1",  # Crude Oil Futures, Continuous Contract
-				"CME_HG1",  # Copper Futures, Continuous Contract
-				"CME_LB1",  # Random Length Lumber Futures, Continuous Contract
-				"CME_NG1",  # Natural Gas (Henry Hub) Physical Futures, Continuous Contract
-				"CME_PA1",  # Palladium Futures, Continuous Contract 
-				"CME_RR1",  # Rough Rice Futures, Continuous Contract
+self.symbols = [
+				"CME_S1",   # Soybean Futures, Continuous Contract #1
+				"CME_W1",   # Wheat Futures, Continuous Contract #1
+				"CME_SM1",  # Soybean Meal Futures, Continuous Contract #1
+				"CME_BO1",  # Soybean Oil Futures, Continuous Contract #1
+				"CME_C1",   # Corn Futures, Continuous Contract #1
+				"CME_O1",   # Oats Futures, Continuous Contract #1
+				"CME_LC1",  # Live Cattle Futures, Continuous Contract #1
+				"CME_FC1",  # Feeder Cattle Futures, Continuous Contract #1
+				"CME_LN1",  # Lean Hog Futures, Continuous Contract #1
+				"CME_GC1",  # Gold Futures, Continuous Contract #1
+				"CME_SI1",  # Silver Futures, Continuous Contract #1
+				"CME_PL1",  # Platinum Futures, Continuous Contract #1
+				"CME_CL1",  # Crude Oil Futures, Continuous Contract #1
+				"CME_HG1",  # Copper Futures, Continuous Contract #1
+				"CME_LB1",  # Random Length Lumber Futures, Continuous Contract #1
+				"CME_NG1",  # Natural Gas (Henry Hub) Physical Futures, Continuous Contract #1
+				"CME_PA1",  # Palladium Futures, Continuous Contract  #1
+				"CME_RR1",  # Rough Rice Futures, Continuous Contract #1
+				"CME_CU1",  # Chicago Ethanol (Platts) Futures
+				"CME_DA1",  # Class III Milk Futures
 				
-				"ICE_CC1",  # Cocoa Futures, Continuous Contract 
-				"ICE_CT1",  # Cotton No. 2 Futures, Continuous Contract
-				"ICE_KC1",  # Coffee C Futures, Continuous Contract
-				"ICE_O1",   # Heating Oil Futures, Continuous Contract
-				"ICE_OJ1",  # Orange Juice Futures, Continuous Contract
-				"ICE_SB1"   # Sugar No. 11 Futures, Continuous Contract
+				"ICE_CC1",  # Cocoa Futures, Continuous Contract  #1
+				"ICE_CT1",  # Cotton No. 2 Futures, Continuous Contract #1
+				"ICE_KC1",  # Coffee C Futures, Continuous Contract #1
+				"ICE_O1",   # Heating Oil Futures, Continuous Contract #1
+				"ICE_OJ1",  # Orange Juice Futures, Continuous Contract #1
+				"ICE_SB1"   # Sugar No. 11 Futures, Continuous Contract #1
 				]
 
 # Futures - complete
@@ -179,7 +191,7 @@ self.symbols = ["CME_S1",   # Soybean Futures, Continuous Contract
                         "CME_EC1", # Euro FX Futures, Continuous Contract #1
                         "CME_JY1", # Japanese Yen Futures, Continuous Contract #1
                         "CME_MP1", # Mexican Peso Futures, Continuous Contract #1
-                        #"CME_NE1",# New Zealand Dollar Futures, Continuous Contract #1    # Short history ~2007
+                        "CME_NE1", # New Zealand Dollar Futures, Continuous Contract #1    # Short history ~2007
                         "CME_SF1", # Swiss Franc Futures, Continuous Contract #1
                     
                         "ICE_DX1",      # US Dollar Index Futures, Continuous Contract #1
@@ -490,8 +502,8 @@ import statsmodels.formula.api as sm
         oil_monthly_returns = pd.Series([x for x in self.data[self.oil]])
         spx_monthly_returns = pd.Series([x for x in self.data[self.spx]])
         data_frame = pd.concat([spx_monthly_returns, oil_monthly_returns], axis = 1).dropna()
-        data_frame.columns = [ 'spx', 'oil' ]
         model = sm.ols(formula = 'spx~oil', data = data_frame).fit()
+        data_frame.columns = [ 'spx', 'oil' ]
 		#model = sm.ols(formula = 'Y~X', data = data_frame).fit()
         
         # Simple Linear Regression
@@ -746,26 +758,26 @@ self.short = [x[0] for x in symbol_sue.items() if x[1] <= np.percentile(sue_valu
         return self.Securities.ContainsKey(symbol) and self.Portfolio[symbol].Invested
 		
     def Rebalance(self):
-        # Trade execution
-        if len(self.managed_queue) == 0: return
-    
-        # Liquidate first items if queue is full
-        if len(self.managed_queue) == self.managed_queue.maxlen:
-            item_to_liquidate = self.managed_queue.popleft()
-            for symbol in item_to_liquidate.long_symbols + item_to_liquidate.short_symbols:
-                self.Liquidate(symbol)
-            
-        curr_stock_set = self.managed_queue[-1]
-        if curr_stock_set.count == 0: return
-    
-        weight = 1 / (self.holding_period * curr_stock_set.count)
-        
-        # Open new trades.
-        for symbol in curr_stock_set.long_symbols:
-            self.SetHoldings(symbol, weight)
-            
-        for symbol in curr_stock_set.short_symbols:
-            self.SetHoldings(symbol, -weight)
+			# Trade execution
+			if len(self.managed_queue) == 0: return
+		
+			# Liquidate first items if queue is full
+			if len(self.managed_queue) == self.managed_queue.maxlen:
+				item_to_liquidate = self.managed_queue.popleft()
+				for symbol in item_to_liquidate.long_symbols + item_to_liquidate.short_symbols:
+					self.Liquidate(symbol)
+				
+			curr_stock_set = self.managed_queue[-1]
+			if curr_stock_set.count == 0: return
+		
+			weight = 1 / (self.holding_period * curr_stock_set.count)
+			
+			# Open new trades.
+			for symbol in curr_stock_set.long_symbols:
+				self.SetHoldings(symbol, weight)
+				
+			for symbol in curr_stock_set.short_symbols:
+				self.SetHoldings(symbol, -weight)
 
 class RebalanceQueueItem():
     def __init__(self, long_symbols, short_symbols):
@@ -924,8 +936,8 @@ from scipy import stats
                         ('CME_EC1', 'DE10YT', 'OECD/KEI_IR3TIB01_EA19_ST_M'),# Euro FX Futures, Continuous Contract #1
                         ('CME_BP1', 'GB10YT', 'OECD/KEI_IR3TIB01_GBR_ST_M'), # British Pound Futures, Continuous Contract #1
                         ('CME_JY1', 'JP10YT', 'OECD/KEI_IR3TIB01_JPN_ST_M'), # Japanese Yen Futures, Continuous Contract #1
-                        ('CME_NE1', 'NZ10YT', 'OECD/KEI_IR3TIB01_NZL_ST_M'),  # New Zealand Dollar Futures, Continuous Contract #1
-						"CME_MP1" : "OECD/KEI_IR3TIB01_MEX_ST_M" # Mexican Peso Futures, Continuous Contract #1
+                        ('CME_NE1', 'NZ10YT', 'OECD/KEI_IR3TIB01_NZL_ST_M'), # New Zealand Dollar Futures, Continuous Contract #1
+						"CME_MP1" : 		  'OECD/KEI_IR3TIB01_MEX_ST_M' # Mexican Peso Futures, Continuous Contract #1
                         ]
 						
 						
@@ -945,8 +957,252 @@ from scipy import stats
 			
 # QC implementation changes:
 #   - Instead of top 30% market cap firms, we select 500 most liquid stock from QC filtered stock universe (~8000 stocks) due to time complexity issues tied to whole universe filtering.
-			
-			
+#   - Instead of all listed stock, we select 500 most liquid stocks from QC filtered stock universe (~8000 stocks) due to time complexity issues tied to whole universe filtering.
+#   - Universe consists of top 3000 stock by market cap.	
+#   - Universe consists of top 3000 US stock by market cap from NYSE, AMEX and NASDAQ.
+#   - Instead of all listed stock, we select 500 most liquid stocks traded on NYSE, AMEX, or NASDAQ.
+#   - Universe consists of 500 most liquid stocks traded on NYSE, AMEX, or NASDAQ.
+
         # Risk free rate.
         self.risk_free_rate = self.AddData(fk_tools.QuandlValue, 'FRED/DGS3MO', Resolution.Daily).Symbol
 			
+			
+			
+        # Warmup roc indicator
+            if symbol not in self.data:
+                self.data[symbol] = self.ROC(symbol, self.period, Resolution.Daily)
+                # Warmup roc indicator.
+                history = self.History(symbol, self.period, Resolution.Daily)
+                if history.empty:
+                    self.Debug(f"No history for {symbol} yet")
+                    continue
+                closes = history.loc[symbol].close
+                for time, close in closes.iteritems():
+                    self.data[symbol].Update(time, close)
+					
+# Value weighting,
+# Market cap weighting.
+
+        # Asset growth sorting.
+        sorted_by_assets_growth = sorted(assets_growth_market_cap.items(), key = lambda x: x[1][0], reverse = True)
+        decile = int(len(sorted_by_assets_growth) / 10)
+        long = [ (x[0], x[1][1]) for x in sorted_by_assets_growth[-decile:]]
+        short = [(x[0], x[1][1]) for x in sorted_by_assets_growth[:decile]]
+        
+        total_market_cap_long = sum([x[1] for x in long])
+        for symbol, market_cap in long:
+            self.weight[symbol] = market_cap / total_market_cap_long
+        
+        total_market_cap_short = sum([x[1] for x in short])
+        for symbol, market_cap in short:
+            self.weight[symbol] = -market_cap / total_market_cap_short
+        
+        return [x[0] for x in self.weight.items()]					
+		
+		
+		
+class SymbolData(object):
+    def __init__(self, symbol):
+        self.symbol = symbol#((x.SecurityReference.ExchangeId == "NYS") or (x.SecurityReference.ExchangeId == "NAS") or (x.SecurityReference.ExchangeId == "ASE"))]
+
+# Simple data object.
+class SymbolData():
+    def __init__(self, symbol, period):
+        self.Symbol = symbol
+        self.Window = RollingWindow[float](self.period)
+    
+    def update(self, close):
+        self.Window.Add(close)
+        
+    def is_ready(self):
+        return self.Window.IsReady
+    
+    def volatility(self):
+        daily_closes = np.array([x for x in self.Window])
+        daily_returns = (daily_closes[:-1] - daily_closes[1:]) / daily_closes[1:]
+        return np.std(daily_returns)  
+		
+class SymbolData():
+    def __init__(self, symbol, period):
+        self.Symbol = symbol
+        self.Price = RollingWindow[float](period)
+    
+    def update(self, value):
+        self.Price.Add(value)
+    
+    def is_ready(self):
+        return self.Price.IsReady
+        
+    # Yearly performance, one month skipped.
+    def performance(self):
+        closes = [x for x in self.Price][21:]
+        return (closes[0] / closes[-1] - 1)
+    
+    def max_performance_last_month(self):
+        closes = np.array([x for x in self.Price][:21])
+        daily_returns = closes[:-1] / closes[1:] - 1
+        return max(daily_returns)		
+		
+		
+# Monthly price coarse.
+    def CoarseSelectionFunction(self, coarse):
+        if not self.selection_flag:
+            return Universe.Unchanged
+
+        # Update the rolling window every month.
+        for stock in coarse:
+            symbol = stock.Symbol
+
+            # Store monthly price.
+            if symbol in self.data:
+                self.data[symbol].update(stock.AdjustedPrice)
+
+        self.selection_flag = False
+        
+        # selected = [x.Symbol for x in coarse if x.HasFundamentalData and x.Market == 'usa']
+        selected = [x.Symbol
+            for x in sorted([x for x in coarse if x.HasFundamentalData and x.Market == 'usa'],
+                key = lambda x: x.DollarVolume, reverse = True)[:self.coarse_count]]
+        
+        # Warmup price rolling windows.
+        for symbol in selected:
+            if symbol in self.data:
+                continue
+            
+            self.data[symbol] = SymbolData(symbol, self.period)
+            history = self.History(symbol, self.period*30, Resolution.Daily)
+            if history.empty:
+                self.Log(f"Not enough data for {symbol} yet.")
+                continue
+            closes = history.loc[symbol].close
+            
+            closes_len = len(closes.keys())
+            # Find monthly closes.
+            for index, time_close in enumerate(closes.iteritems()):
+                # index out of bounds check.
+                if index + 1 < closes_len:
+                    date_month = time_close[0].date().month
+                    next_date_month = closes.keys()[index + 1].month
+                
+                    # Found last day of month.
+                    if date_month != next_date_month:
+                        self.data[symbol].update(time_close[1])
+            qq
+        return [x for x in selected if self.data[x].is_ready()]		
+		
+		
+
+# Futures multiplier, quantity.
+            # q = int(self.Portfolio.MarginRemaining / (self.active_future.AskPrice * self.contract_multiplier))
+            qq = floor(self.Portfolio.MarginRemaining / self.Securities[self.active_future.Symbol].BuyingPowerModel.InitialOvernightMarginRequirement)
+            # self.contractsToBuy = floor(self.Portfolio.MarginRemaining / self.Securities[self.liquidContract.Symbol].BuyingPowerModel.InitialOvernightMarginRequirement)
+            self.MarketOrder(self.active_future.Symbol, qq)		
+			
+
+# alphastream value weighting
+        for symbol, w in self.weight.items():
+            self.SetHoldings(symbol, w)
+            if w < 0:
+                insights.append(Insight.Price(symbol, Expiry.EndOfMonth, InsightDirection.Down, None, None, None, abs(w)))
+            else:
+                insights.append(Insight.Price(symbol, Expiry.EndOfMonth, InsightDirection.Up, None, None, None, w))			
+				
+
+class SymbolData():
+    def __init__(self, symbol, period):
+        self.Symbol = symbol
+        self.Price = RollingWindow[float](period)
+    
+    def update(self, value):
+        self.Price.Add(value)
+    
+    def is_ready(self) -> bool:
+        return self.Price.IsReady
+        
+    # Performance, one month skipped.
+    def performance(self, values_to_skip = 0) -> float:
+        closes = [x for x in self.Price][values_to_skip:]
+        return (closes[0] / closes[-1] - 1)				
+		
+		
+# Daily price coarse.
+    def CoarseSelectionFunction(self, coarse):
+        # Update the rolling window every day.
+        for stock in coarse:
+            symbol = stock.Symbol
+
+            # Store monthly price.
+            if symbol in self.data:
+                self.data[symbol].update(stock.AdjustedPrice)
+
+        if not self.selection_flag:
+            return Universe.Unchanged
+
+        # selected = [x.Symbol for x in coarse if x.HasFundamentalData and x.Market == 'usa']
+        selected = [x.Symbol
+            for x in sorted([x for x in coarse if x.HasFundamentalData and x.Market == 'usa'],
+                key = lambda x: x.DollarVolume, reverse = True)[:self.coarse_count]]
+        
+        # Warmup price rolling windows.
+        for symbol in selected:
+            if symbol in self.data:
+                continue
+            
+            self.data[symbol] = SymbolData(symbol, self.period)
+            history = self.History(symbol, self.period, Resolution.Daily)
+            if history.empty:
+                self.Log(f"Not enough data for {symbol} yet.")
+                continue
+            closes = history.loc[symbol].close
+            for time, close in closes.iteritems():
+                self.data[symbol].update(close)
+            
+        return [x for x in selected if self.data[x].is_ready()]   
+		
+# EW model and execution model.
+        self.SetPortfolioConstruction(EqualWeightingPortfolioConstructionModel(Expiry.EndOfWeek))
+        self.SetExecution(ImmediateExecutionModel())		
+		
+		
+# Consolidator SymbolData
+
+class SymbolData():
+    def __init__(self, algorithm, symbol, period):
+        self.Symbol = symbol
+        self.Price = RollingWindow[float](period)
+        self.Algorithm = algorithm
+        
+        # Setup consolidator.
+        self.Consolidator = TradeBarConsolidator(timedelta(days=1))
+        self.Consolidator.DataConsolidated += self.CustomHandler
+        algorithm.SubscriptionManager.AddConsolidator(symbol, self.Consolidator)            
+
+        # Warmup.
+        history = algorithm.History(algorithm.Symbol(symbol), period, Resolution.Daily)
+        if history.empty:
+            algorithm.Debug(f"Not warmed up yet: {symbol}")
+            return
+        closes = history.loc[symbol].close
+        for time, close in closes.iteritems():
+            self.Price.Add(close)
+            
+    def update(self, value):
+        self.Price.Add(value)
+    
+    def is_ready(self) -> bool:
+        return self.Price.IsReady
+        
+    def performance(self, values_to_skip = 0) -> float:
+        closes = [x for x in self.Price][values_to_skip:]
+        return (closes[0] / closes[-1] - 1)
+    
+    def volatility(self):
+        prices = np.array([x for x in self.Price])
+        daily_returns = prices[:-1] / prices[1:] - 1
+        return np.std(daily_returns)
+        
+    def CustomHandler(self, sender, consolidated):
+        self.Price.Add(consolidated.Close)
+        
+    def dispose(self):
+        self.Algorithm.SubscriptionManager.RemoveConsolidator(self.Symbol, self.Consolidator)		

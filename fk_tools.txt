@@ -15,13 +15,13 @@ def Volatility(values):
     returns = (values[1:] - values[:-1]) / values[:-1]
     return np.std(returns)  
 
-def MultipleLinearRegresion(x, y):
+def MultipleLinearRegression(x, y):
     x = np.array(x).T
     x = sm.add_constant(x)
     result = sm.OLS(endog=y, exog=x).fit()
     return result
     
-# Custom fee model
+# Custom fee model.
 class CustomFeeModel(FeeModel):
     def GetOrderFee(self, parameters):
         fee = parameters.Security.Price * parameters.Order.AbsoluteQuantity * 0.00005

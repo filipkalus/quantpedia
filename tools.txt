@@ -627,106 +627,6 @@ self.AddUniverseSelection(FineFundamentalUniverseSelectionModel(self.SelectCoars
 		
 		
 
-#
-# Trenching v.2 - variable long and short portfolio lenght
-#
-        # Trenching
-        self.old_queue_long = []
-        self.old_queue_short = []
-        self.new_queue_long = []
-        self.new_queue_short = []
-        self.holding_period = 6
-        self.month = 1
-	
-	# fine
-	    long = [...]
-	    short = [...]
-		
-		# Sort symbols in queues to rebalance every month (1/self.holding_period of all symbols)
-        # Long
-        temp_queue_long = []
-        temp_queue_short = []
-        for i in range(0, self.holding_period):
-            temp_queue_long.append(RebalanceQueueItem())
-            temp_queue_short.append(RebalanceQueueItem())
-        
-        if len(long) <= self.holding_period:
-            for symbol_index in range(0, len(long)):
-                temp_queue_long[symbol_index].symbols.append(long[symbol_index])
-        else:
-            queue_index = 0
-            for symbol_index in range(0, len(long)):
-                temp_queue_long[queue_index].symbols.append(long[symbol_index])
-                
-                queue_index += 1
-                if queue_index > self.holding_period-1:
-                    queue_index = 0
-        
-        self.old_queue_long = [x for x in self.new_queue_long]
-        self.new_queue_long = temp_queue_long
-        
-        # Short
-        if len(short) <= self.holding_period:
-            for symbol_index in range(0, len(short)):
-                temp_queue_short[symbol_index].symbols.append(short[symbol_index])
-        else:
-            queue_index = 0
-            for symbol_index in range(0, len(short)):
-                temp_queue_short[queue_index].symbols.append(short[symbol_index])
-                
-                queue_index += 1
-                if queue_index > self.holding_period-1:
-                    queue_index = 0
-        
-        self.old_queue_short = [x for x in self.new_queue_short]
-        self.new_queue_short = temp_queue_short
-        
-        return long + short        
-
-    def Rebalance(self):
-        self.month += 1
-        if self.month > self.holding_period:
-            self.month = 1
-            
-        # Trade execution
-        count = sum([len(x.symbols) for x in self.new_queue_long]) + sum([len(x.symbols) for x in self.new_queue_short])
-        if count == 0: return
-    
-        # Liqidate old sets of stocks
-        if len(self.old_queue_long) != 0:
-            stocks_to_liquidate = self.old_queue_long[self.month - 1].symbols
-            for symbol in stocks_to_liquidate:
-                self.Liquidate(symbol)
-        if len(self.old_queue_short) != 0:
-            stocks_to_liquidate = self.old_queue_short[self.month - 1].symbols
-            for symbol in stocks_to_liquidate:
-                self.Liquidate(symbol)
-        
-        # Rebalance new stocks by slices
-        stocks_to_rebalance = self.new_queue_long[self.month - 1].symbols
-        for symbol in stocks_to_rebalance:
-            self.SetHoldings(symbol, 1 / count)
-            
-        stocks_to_rebalance = self.new_queue_short[self.month - 1].symbols
-        for symbol in stocks_to_rebalance:
-            self.SetHoldings(symbol, - 1 / count)
-
-class RebalanceQueueItem():
-    def __init__(self):
-        self.symbols = []
-
-def Selection(self):
-	if self.month == self.holding_period:
-		self.selection_flag = True
-	
-		
-
-# NEW SORTING
-sue_values = [x for x in self.sue]
-self.long = [x[0] for x in symbol_sue.items() if x[1] >= np.percentile(sue_values, 90)]
-self.short = [x[0] for x in symbol_sue.items() if x[1] <= np.percentile(sue_values, 10)]
-
-
 
 # QC csv import
         csv_string_file = self.Download('data.quantpedia.com/backtesting_data/economic/fed_days.csv')
@@ -737,61 +637,7 @@ self.short = [x[0] for x in symbol_sue.items() if x[1] <= np.percentile(sue_valu
 
 
 
-# Trenching
-# Trenching
-# Trenching
-# Trenching
 
-        self.holding_period = 12
-        self.managed_queue = deque(maxlen = self.holding_period + 2)
-
-		if len(nid) == 0: 
-			# Store empty item.
-            self.managed_queue.append(RebalanceQueueItem([], []))
-            return []
-
-		long = [.... and not self.IsInvested(x[0])]
-		short = [.... and not self.IsInvested(x[0])]
-		self.managed_queue.append(RebalanceQueueItem(long, short))
-
-    def IsInvested(self, symbol):
-        return self.Securities.ContainsKey(symbol) and self.Portfolio[symbol].Invested
-		
-    def Rebalance(self):
-			# Trade execution
-			if len(self.managed_queue) == 0: return
-		
-			# Liquidate first items if queue is full
-			if len(self.managed_queue) == self.managed_queue.maxlen:
-				item_to_liquidate = self.managed_queue.popleft()
-				for symbol in item_to_liquidate.long_symbols + item_to_liquidate.short_symbols:
-					self.Liquidate(symbol)
-				
-			curr_stock_set = self.managed_queue[-1]
-			if curr_stock_set.count == 0: return
-		
-			weight = 1 / (self.holding_period * curr_stock_set.count)
-			
-			# Open new trades.
-			for symbol in curr_stock_set.long_symbols:
-				self.SetHoldings(symbol, weight)
-				
-			for symbol in curr_stock_set.short_symbols:
-				self.SetHoldings(symbol, -weight)
-
-class RebalanceQueueItem():
-    def __init__(self, long_symbols, short_symbols):
-        self.long_symbols = long_symbols
-        self.short_symbols = short_symbols
-        self.count = len(long_symbols + short_symbols)
-		
-		
-		
-		
-		
-		
-		
-		
 		
 #		
 # Refined stock universe
@@ -939,7 +785,8 @@ from scipy import stats
                         ('CME_NE1', 'NZ10YT', 'OECD/KEI_IR3TIB01_NZL_ST_M'), # New Zealand Dollar Futures, Continuous Contract #1
 						"CME_MP1" : 		  'OECD/KEI_IR3TIB01_MEX_ST_M' # Mexican Peso Futures, Continuous Contract #1
                         ]
-						
+		
+		self.usa_cash_rate = 'OECD/KEI_IRSTCI01_USA_ST_M'
 						
         for currency_future, bond_yield_symbol, cash_rate_symbol in self.symbols:
             # Currency futures data.
@@ -1087,7 +934,7 @@ class SymbolData():
                     # Found last day of month.
                     if date_month != next_date_month:
                         self.data[symbol].update(time_close[1])
-            qq
+            
         return [x for x in selected if self.data[x].is_ready()]		
 		
 		

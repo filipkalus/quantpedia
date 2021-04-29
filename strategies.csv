@@ -1,0 +1,303 @@
+startegy_id;project_id;intraday
+1;4230130;0;komodity nemam pristup
+2;4230230;0;komodity nemam pristup
+3;4230326;0;nemam pristup
+4;5001397;1;nemam pristup
+5;4891402;0;nemam pristup
+6;3034768;0;nemam pristup
+7;4099761;0;stocky
+8;3641030;0;nemam pristup
+9;3003525;0;nemam pristup
+10;2748118;0;sektorove etf
+11;3111968;0;nemam pristup
+12;5009598;0;stocky pair trading
+13;5146386;0;stocky
+14;5146276;0;nemam pristup
+15;5634166;0;nemam pristup
+16;4996737;0;nemam pristup
+18;5058023;0;nemam pristup
+19;6254547;0;nemam pristup
+20;4490003;1;nemam pristup
+21;3135933;0;komodity nemam pristup
+22;3135964;0;komodity nemam pristup
+23;3135998;0;komodity nemam pristup
+25;4224858;0;nemam pristup
+26;4224808;0;nemam pristup
+27;6803604;0;nemam pristup
+30;0;0;komodity nemam pristup
+31;5006942;0;nemam pristup
+33;3984020;0;stocky
+34;3890842;0;nemam pristup
+36;3240110;0;nemam pristup
+37;3240011;0;nemam pristup
+38;3927851;0;nemam pristup
+41;5071042;0;nemam pristup
+43;5066023;0;komodity nemam pristup
+44;5071015;0;nemam pristup
+45;3780817;0;nemam pristup
+46;3780834;0;nemam pristup
+47;3009553;0;nemam pristup
+48;3083452;0;nemam pristup
+50;3746907;0;nemam pristup
+51;5125951;0;stocky
+52;5111576;0;nemam pristup
+54;5111640;0;nemam pristup
+55;5111730;0;pairs trading etf
+56;4776314;0;podla opisu je tvoreny universe iba zo 6 komoditnych futures, ktore tam uz su
+57;5111976;0;nemam pristup
+58;5120000;0;nemam pristup
+59;0;0;komoditne futures nemam pristup
+62;6660643;0;stocky
+63;4611768;1;nemam pristup
+65;3548691;0;nemam pristup
+66;5128641;0;stocky
+67;3513797;0;etf
+68;3883894;0;nemam pristup
+71;3268281;0;komoditne futures
+73;5127483;0;SPRAVENE
+75;2744080;1;nemam pristup
+78;5161386;0;nemam pristup
+79;2748157;0;SPY a SHY strategy
+80;4181193;0;stocky
+81;4776371;0;nemam pristup
+83;5633435;0;nemam pristup
+86;2744640;0;nemam pristup
+88;3548395;0;stocky
+91;	99242;0;etfka
+92;2912542;0;stocky
+93;3165214;0;stocky
+96;2980431;0;nemam pristup
+98;3548552;0;nemam pristup
+99;4238124;0;nemam pristup
+100;5198968;0;komoditne futures nemam pristup
+102;5633500;1;nemam pristup
+103;5204091;0;nemam pristup
+105;2978845;0;komoditne futures nemam pristup
+107;3626869;0;nemam pristup
+109;3636405;0;nemam pristup
+110;4657427;0;komoditne futures SPRAVENE
+111;4651539;0;komoditne futures nemam pristup
+112;3165311;0;nemam pristup
+113;5634226;0;nemam pristup
+114;4099716;0;nemam pristup
+117;5231093;0;nemam pristup
+118;2926276;0;komoditne futures SPRAVENE
+120;4651557;0;nemam pristup
+121;4651587;0;nemam pristup
+122;3116213;0;nemam pristup
+124;3193849;0;nemam pristup
+125;5225828;0;nemam pristup
+126;3636428;0;nemam pristup
+127;2980467;0;nemam pristup
+129;3047292;0;nemam pristup
+130;2933659;0;nemam pristup
+131;5223753;0;nie je strategia na komoditne futures
+132;0;0;komoditne futures nemam pristup
+133;2904743;0;nemam pristup
+134;6485546;0;etfka
+135;4776324;0;komoditne futures SPRAVENE
+136;4891600;0;stocky
+137;3291257;0;nemam pristup komoditne futures
+140;2978855;0;nemam pristup
+141;3626954;0;stocky
+142;2744499;0;komoditne futures nemam pristup
+143;2744449;0;nemam pristup
+144;6254454;0;nemam pristup
+146;2814057;0;komoditne futures nemam pristup
+147;2980214;0;stocky
+149;3636461;0;nemam pristup
+150;2796486;0;nemam pristup
+151;5635213;0;nemam pristup
+152;5400954;0;nemam pristup
+154;3636512;0;stocky
+155;5402357;0;stocks
+156;3117078;0;stocks
+158;2980239;0;stocks
+159;3121678;0;nemam pristup
+160;3924435;0;nemam pristup
+161;0;0;komoditne futures nemam pristup
+162;4105519;0;stocky
+163;6230808;0;nemam pristup
+164;3083524;0;nemam pristup
+168;0;0;komoditne futures nemam pristup
+170;3458189;0;nemam pristup
+171;4301966;0;stocky
+174;5937683;0;stocky
+181;3193907;0;stocky
+184;5271142;0;nemam pristup
+189;2926500;0;nemam pristup
+191;3009590;0;stocky
+193;3468678;0;nemam pristup
+194;3474140;0;stocky
+195;3011877;0;stocky
+196;3119706;0;nemam pristup
+197;6230678;0;stocky
+199;4101751;0;nemam pristup
+200;6338203;0;nemam pristup
+202;6189646;0;nemam pristup
+204;4822055;1;nemam pristup
+206;2821020;0;komoditne futures nemam pristup
+208;3513854;0;nemam pristup
+210;3057186;0;komoditne futures nemam pristup
+213;5845003;0;etfka
+214;3674339;0;komoditne futures nemam pristup
+219;2744473;0;currencies
+220;3924511;0;komoditne futures nemam pristup
+221;4124483;0;nemam pristup
+224;2980610;0;nemam pristup
+227;3746970;0;stocky
+229;5563721;0;nemam pristup
+230;3984027;0;nemam pristup
+231;5537566;0;nemam pristup
+232;3119636;0;nemam pristup
+234;3924457;0;komoditne futures nemam pristup
+240;6171531;0;nemam pristup
+241;5634877;0;nemam pristup
+242;3298871;0;nemam pristup
+244;3299258;0;nemam pristup
+249;3990046;0;nemam pristup
+251;3299387;1;nemam pristup
+253;2810578;0;nemam pristup
+255;2926390;0;komoditne futures nemam pristup
+256;2926169;1;nemam pristup
+257;4471419;1;nemam pristup
+260;5028238;0;komoditne futures nemam pristup
+261;5224408;0;komoditne futures nemam pristup
+262;0;0;komoditne futures nemam pristup
+265;3780872;0;nemam pristup
+266;5634936;0;nemam pristup
+267;2978899;0;nemam pristup
+269;4910622;1;nemam pristup
+270;3324711;0;stocky
+276;2914252;1;nemam pristup
+278;0;0;komoditne futures nemam pristup
+279;2744488;0;etfka
+281;3111305;0;komoditne futures nemam pristup
+284;2879444;0;nemam pristup
+285;2978932;0;komoditne futures SPRAVENE
+286;3037026;0;currencies
+288;0;0;komoditne futures nemam pristup
+290;3514023;0;nemam pristup
+292;3116659;0;nemam pristup
+294;3034901;0;komoditne futures nemam pristup
+297;3166689;0;nemam pristup
+301;0;0;komoditne futures prerabam v ramci tasku
+
+
+302;3457696;0;nemam pristup
+303;3457775;0;nemam pristup
+305;4124397;0;komoditne futures nemam pristup
+308;2929838;0;nemam pristup
+316;2777244;0;nemam pristup
+320;0;0;komoditne futures nemam pristup
+322;0;0;komoditne futures nemam pristup
+323;2829890;0;nemam pristup
+324;3193837;0;nemam pristup
+326;0;0;komoditne futures nemam pristup
+339;5278171;0;nemam pristup
+342;3468631;0;nemam pristup
+341;3458372;0;IBA CRUDE OIL
+344;3323955;0;nemam pristup
+346;0;0;komoditne futures nemam pristup
+351;0;0;komoditne futures nemam pristup
+352;0;0;komoditne futures nemam pristup
+353;4821918;0;nemam pristup
+354;0;0;komoditne futures nemam pristup
+355;3009486;0;nemam pristup
+357;3321451;0;nemam pristup
+361;4891526;0;komoditne futures SPRAVENE
+364;0;0;komoditne futures nemam pristup
+368;4506574;0;nemam pristup
+374;0;0;komoditne futures nemam pristup
+376;3747094;0;nemam pristup
+377;0;0;komoditne futures nemam pristup
+378;3360274;0;nemam pristup
+379;5817912;0;nemam pristup
+380;5818013;0;nemam pristup
+381;5900727;0;nemam pristup
+382;3118155;0;nemam pristup
+383;3360259;0;crypto
+384;0;0;komoditne futures nemam pristup
+388;0;0;komoditne futures nemam pristup
+390;5871224;0;nemam pristup
+391;3327613;0;nemam pristup
+394;5754891;0;currencies
+395;3975233;0;nemam pristup
+396;0;0;komoditne futures nemam pristup
+397;5386279;0;stocks
+400;3410092;0;stocks
+408;5754896;0;crypto
+409;6253819;1;crypto
+410;4124334;0;stocks
+419;2879533;1;nemam pristup
+423;4943420;0;stocks
+424;0;0;komoditne futures nemam pristup
+426;3036647;0;nemam pristup
+428;0;0;komoditne futures nemam pristup
+432;3436184;0;nemam pristup
+433;5672577;0;crypto
+434;5656038;0;crypto
+441;5576212;0;tu budu potrebne pre ne pridat nejake rocne values do future_comodities_RPWD.csv. Zatial nie je spravene
+442;0;0;komoditne futures nemam pristup
+445;0;0;komoditne futures nemam pristup
+446;3780991;0;stocky
+453;0;0;komoditne futures nemam pristup
+454;0;0;komoditne futures nemam pristup
+457;3473511;0;nemam pristup
+458;3468698;1;nemam pristup
+462;7151426;0;global equities
+467;3884184;1;nemam pristup
+473;0;0;komoditne futures nemam pristup
+476;0;0;komoditne futures nemam pristup
+477;0;0;komoditne futures nemam pristup
+479;4957075;0;stocky
+484;0;0;komoditne futures nemam pristup
+491;4452695;1;SPY
+493;4611222;0;stocky
+495;0;0;komoditne futures nemam pristup
+499;5363096;0;nemam pristup
+500;4957200;0;nemam pristup
+506;4979450;1;komoditne futures nemam pristup
+507;4980508;1;nemam pristup
+538;5618123;0;iba crude oil
+540;0;0;komoditne futures nemam pristup
+544;5883331;0;stocky
+549;0;0;komoditne futures nemam pristup
+550;0;0;komoditne futures nemam pristup
+551;0;0;komoditne futures nemam pristup
+559;0;0;komoditne futures nemam pristup
+563;6314102;0;currencies
+564;6341126;0;nemam pristup
+566;0;0;komoditne futures nemam pristup
+567;6314107;0;stocks
+569;0;0;komoditne futures nemam pristup
+572;6568115;0;stocks
+573;6568102;0;stocks
+580;6877421;0;komoditne futures nemam pristup
+584;6950353;0;stocks
+585;7151588;0;china stocks
+595;7421196;0;komoditne futures SPRAVENE
+
+
+
+186;3993096;0 - skontroluj
+
+update - 5Y a 10Y bond yield - mame script investing
+
+coinmetrics network data - 
+https://coinmetrics.io/community-network-data/ - 434
+https://www.quantconnect.com/terminal/#open/7330238 - 594
+
+rollovane futures
+56 - https://www.quantconnect.com/terminal/#open/4776314
+ramadan dates - https://www.almanac.com/content/when-start-ramadan - ajdustnute uz v csv - koncia 11.03.2024;08.04.2024
+COT futures - https://commitmentsoftraders.org/cot-data/ - 
+030 - https://www.quantconnect.com/terminal/#open/5153111
+056 - https://www.quantconnect.com/terminal/#open/4776314
+
+daily libor rates - daily bond yield - http://iborate.com/chf-libor/ - pouzite v 250
+https://www.quantconnect.com/terminal/#open/6179753
+
+libor rate do PRO - https://fred.stlouisfed.org/series/USD1MTD156N
+
+FED days - 075; 010 - koncia 2022-01-26
